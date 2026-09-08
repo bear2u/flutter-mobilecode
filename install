@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 usage() {
     cat <<EOF
-OpenCode Installer
+MobileCode Flutter Installer
 
 Usage: install.sh [options]
 
@@ -20,8 +20,9 @@ Options:
         --no-modify-path    Don't modify shell config files (.zshrc, .bashrc, etc.)
 
 Examples:
-    curl -fsSL https://raw.githubusercontent.com/hsandhu/mobilecode/main/install | bash
-    curl -fsSL https://raw.githubusercontent.com/hsandhu/mobilecode/main/install | bash -s -- --version 1.0.180
+    # Install a published GitHub Release binary
+    curl -fsSL https://raw.githubusercontent.com/bear2u/flutter-mobilecode/flutter-release/install | bash
+    curl -fsSL https://raw.githubusercontent.com/bear2u/flutter-mobilecode/flutter-release/install | bash -s -- --version 1.0.180
     ./install --binary /path/to/mobilecode
 EOF
 }
@@ -181,24 +182,26 @@ else
     fi
 
     if [ -z "$requested_version" ]; then
-        url="https://github.com/hsandhu/mobilecode/releases/latest/download/$filename"
-        specific_version=$(curl -s https://api.github.com/repos/hsandhu/mobilecode/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+        url="https://github.com/bear2u/flutter-mobilecode/releases/latest/download/$filename"
+        specific_version=$(curl -s https://api.github.com/repos/bear2u/flutter-mobilecode/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
 
         if [[ $? -ne 0 || -z "$specific_version" ]]; then
-            echo -e "${RED}Failed to fetch version information${NC}"
+            echo -e "${RED}No MobileCode Flutter release binary is available yet.${NC}"
+            echo -e "${MUTED}Install from source instead:${NC}"
+            echo -e "git clone --branch flutter-release --single-branch https://github.com/bear2u/flutter-mobilecode.git"
             exit 1
         fi
     else
         # Strip leading 'v' if present
         requested_version="${requested_version#v}"
-        url="https://github.com/hsandhu/mobilecode/releases/download/v${requested_version}/$filename"
+        url="https://github.com/bear2u/flutter-mobilecode/releases/download/v${requested_version}/$filename"
         specific_version=$requested_version
 
         # Verify the release exists before downloading
-        http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/hsandhu/mobilecode/releases/tag/v${requested_version}")
+        http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/bear2u/flutter-mobilecode/releases/tag/v${requested_version}")
         if [ "$http_status" = "404" ]; then
             echo -e "${RED}Error: Release v${requested_version} not found${NC}"
-            echo -e "${MUTED}Available releases: https://github.com/hsandhu/mobilecode/releases${NC}"
+            echo -e "${MUTED}Available releases: https://github.com/bear2u/flutter-mobilecode/releases${NC}"
             exit 1
         fi
     fi
@@ -455,6 +458,6 @@ echo -e ""
 echo -e "cd <project>  ${MUTED}# Open directory${NC}"
 echo -e "mobilecode      ${MUTED}# Run command${NC}"
 echo -e ""
-echo -e "${MUTED}For more information visit ${NC}https://github.com/hsandhu/mobilecode"
+echo -e "${MUTED}For more information visit ${NC}https://github.com/bear2u/flutter-mobilecode"
 echo -e ""
 echo -e ""
